@@ -71,16 +71,15 @@ The best way to make use of these is to set up your development environment in V
 
 2. **Open the 'Clone a Repository' Window**
 
-   - From the **Start Window**, click on **"Clone a repository"**
-
-     ![](./images/02.png)
+   - From the **Start Window**, click on **"Clone a repository"**  
+     <img src="./images/02.png" alt="Clone a Repository Window" style="margin: 0.5em 0; display: block;" />
      (If you already have a solution open, go to **File > Clone Repository...**)
 
 3. **Enter the Repository URL**
 
-   - Paste the **HTTPS or SSH URL** of the repository you want to clone
-      (e.g. `https://github.com/RWS/trados-studio-api-samples.git`)
-     ![](./images/003.png)
+   - Paste the **HTTPS or SSH URL** of the repository you want to clone  
+     (e.g. `https://github.com/RWS/trados-studio-api-samples.git`)  
+     <img src="./images/003.png" alt="Repository URL Input" style="margin: 0.5em 0; display: block;" />
 
 4. **Choose the Local Path**
 
@@ -172,9 +171,9 @@ C:\Program Files (x86)\Trados\Trados Studio\Studio18\SDLTradosStudio.exe
 
 This makes sure Studio starts when I hit the **Start** button in Visual Studio.
 
-Close the Properties window - now you’re ready to run and debug your plugin directly within Studio.
+Close the Properties window – now you’re ready to run and debug your plugin directly within Studio.
 
-![](./images/04.png)
+<img src="./images/04.png" alt="Start debugging the plugin in Visual Studio" style="margin: 0.5em 0; display: block;" />
 
 ---
 
@@ -182,11 +181,11 @@ Close the Properties window - now you’re ready to run and debug your plugin di
 
 When Studio launches, you might see this warning:
 
-![](./images/05.png)
+<img src="./images/05.png" alt="Plugin not signed warning in Trados Studio" style="margin: 0.5em 0; display: block;" />
 
 That’s because your plugin isn’t signed. All production plugins must be signed to avoid this message.
 
-When you publish your plugin to the **RWS AppStore**, the **AppStore Manager** will sign it for you. You can then download and use it - even privately - without publishing it publicly.
+When you publish your plugin to the **RWS AppStore**, the **AppStore Manager** will sign it for you. You can then download and use it – even privately – without publishing it publicly.
 
 But during development, this message will keep appearing every time you build. That’s perfectly normal and a good reminder that you’re still working with a development build.
 
@@ -202,11 +201,11 @@ You should see a message like:
 
 > “Additional installed File Types exist”
 
-![](./images/06.png)
+<img src="./images/06.png" alt="Additional installed file types message" style="margin: 0.5em 0; display: block;" />
 
-Click it, and you should find your new File Type in the list - ready to be added to your options.
+Click it, and you should find your new File Type in the list – ready to be added to your options.
 
-![](./images/07.png)
+<img src="./images/07.png" alt="New File Type listed in Trados Studio Options" style="margin: 0.5em 0; display: block;" />
 
 Click it, and you’re good to go.
 
@@ -216,9 +215,9 @@ Click it, and you’re good to go.
 
 In your project folder, you’ll find a file called `sample.text`. Use this to test your plugin.
 
-![](./images/08.png)
+<img src="./images/08.png" alt="Sample text file for testing the plugin" style="margin: 0.5em 0; display: block;" />
 
-It’s a simple test file designed to trigger the key parts of the plugin - especially useful when you begin exploring how file recognition and tagging works in the code.
+It’s a simple test file designed to trigger the key parts of the plugin – especially useful when you begin exploring how file recognition and tagging works in the code.
 
 ---
 
