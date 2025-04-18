@@ -72,7 +72,7 @@ The best way to make use of these is to set up your development environment in V
    - From the **Start Window**, click on **"Clone a repository"**
 
      ![](./images/02.png)
-      (If you already have a solution open, go to **File > Clone Repository...**)
+     (If you already have a solution open, go to **File > Clone Repository...**)
 
 3. **Enter the Repository URL**
 
