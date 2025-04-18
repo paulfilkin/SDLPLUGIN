@@ -23,7 +23,7 @@ If you want to create plugins or tools for Trados Studio, you'll need to set up 
    - Open Visual Studio
    - Go to Extensions > Manage Extensions
    - Search for "Trados Studio Plugin Template"
-     ![](.\images\01.png)
+     ![](./images/01.png)
    - At the time of writing you'll find the extensions for Trados Studio 2021, 2022 and 2024
    - Download the one you need and restart Visual Studio when prompted
 
@@ -71,14 +71,14 @@ The best way to make use of these is to set up your development environment in V
 
    - From the **Start Window**, click on **"Clone a repository"**
 
-     ![](.\images\02.png)
+     ![](./images/02.png)
       (If you already have a solution open, go to **File > Clone Repository...**)
 
 3. **Enter the Repository URL**
 
    - Paste the **HTTPS or SSH URL** of the repository you want to clone
       (e.g. `https://github.com/RWS/trados-studio-api-samples.git`)
-     ![](.\images\003.png)
+     ![](./images/003.png)
 
 4. **Choose the Local Path**
 
