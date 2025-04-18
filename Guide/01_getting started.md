@@ -73,6 +73,7 @@ The best way to make use of these is to set up your development environment in V
 
    - From the **Start Window**, click on **"Clone a repository"**  
      <img src="./images/02.png" alt="Clone a Repository Window" style="margin: 0.5em 0; display: block;" />
+     
      (If you already have a solution open, go to **File > Clone Repository...**)
 
 3. **Enter the Repository URL**
