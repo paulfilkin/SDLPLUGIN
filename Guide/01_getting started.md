@@ -24,12 +24,11 @@ If you want to create plugins or tools for Trados Studio, you'll need to set up 
 - Go to **Extensions > Manage Extensions**  
 - Search for "Trados Studio Plugin Template"
 
-<p align="center">
-  <img src="./images/01.png" alt="Trados Studio Plugin Template Extension Search" />
-</p>
+<img src="./images/01.png" alt="Trados Studio Plugin Template Extension Search" style="display: block; margin: 1em 0;" />
 
 - At the time of writing you'll find the extensions for Trados Studio 2021, 2022 and 2024  
 - Download the one you need and restart Visual Studio when prompted
+
 
 
    
