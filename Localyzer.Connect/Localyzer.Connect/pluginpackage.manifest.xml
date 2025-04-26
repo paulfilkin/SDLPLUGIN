@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PluginPackage xmlns="http://www.sdl.com/Plugins/PluginPackage/1.0">
+  <PlugInName>Localyzer Connect for Trados</PlugInName>
+  <Version>0.0.0.1</Version>
+  <Description>Provides an sdlxliff preview for Trados Cloud and .PXML files.</Description>
+  <Author>multifarious</Author>
+  <RequiredProduct name="TradosStudio" minversion="18.0" maxversion="18.9"/>
+</PluginPackage>
