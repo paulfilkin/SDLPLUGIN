@@ -1,43 +1,56 @@
-﻿using Sdl.Desktop.IntegrationApi.Interfaces;
+﻿using Microsoft.Web.WebView2.Wpf;
+using Sdl.Desktop.IntegrationApi.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using UserControl = System.Windows.Controls.UserControl;
+using System.Net;
 
 namespace Localyzer.Connect.Views
 {
-    /// <summary>
-    /// Interaction logic for MainView.xaml
-    /// </summary>
     public partial class MainViewPart : UserControl, IUIControl
     {
+        private WebView2 _browser;
+
         public MainViewPart()
         {
             InitializeComponent();
-        }
 
-        public void UpdateSegmentText(string segmentText, string url)
-        {
-             TextBlock.Text = segmentText;
+            _browser = new WebView2();
+            _browser.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _browser.VerticalAlignment = VerticalAlignment.Stretch;
+            _browser.Margin = new Thickness(0);
 
-            if (!string.IsNullOrWhiteSpace(url)) Browser.Navigate(url);
+            RootGrid.Children.Add(_browser);
         }
 
         public void Dispose()
         {
-            // TODO release managed resources here
+            _browser?.Dispose();
         }
+
+        public async void UpdateSegmentText(string segmentText, string url)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                try
+                {
+                    // Ensure WebView2 is initialized before setting the URL
+                    await _browser.EnsureCoreWebView2Async();
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] WebView2 Initialized, rendering URL: {url}");
+
+                    // Now, set the URL in the WebView2 control
+                    _browser.Source = new Uri(url);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ERROR] WebView2 initialization failed: {ex.Message}");
+                }
+            }
+            else
+            {
+                _browser.Source = null; // Optional: Show a default page or message if URL is empty
+            }
+        }
+
     }
 }
