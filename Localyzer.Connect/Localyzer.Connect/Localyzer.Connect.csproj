@@ -5,6 +5,7 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<PluginDeploymentPath>$(AppData)\Trados\Trados Studio\18\Plugins</PluginDeploymentPath>
 		<StartAction>Program</StartAction>
+    <UseWPF>true</UseWPF>
 		<StartProgram>C:\Program Files (x86)\Trados\Trados Studio\Studio18\SDLTradosStudio.exe</StartProgram>
 	</PropertyGroup>
   <ItemGroup>
@@ -15,7 +16,7 @@
       <HintPath>$(MSBuildProgramFiles32)\Trados\Trados Studio\Studio18\Sdl.Desktop.IntegrationApi.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Sdl.Desktop.Platform">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Trados\Trados Studio\Studio18\Sdl.Desktop.Platform.dll</HintPath>
+      <HintPath>$(MSBuildProgramFiles32)\Trados\Trados Studio\Studio18\Sdl.Desktop.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Sdl.FileTypeSupport.Framework.Core">
       <HintPath>$(MSBuildProgramFiles32)\Trados\Trados Studio\Studio18\Sdl.FileTypeSupport.Framework.Core.dll</HintPath>
@@ -33,7 +34,7 @@
       <HintPath>$(MSBuildProgramFiles32)\Trados\Trados Studio\Studio18\Sdl.ProjectAutomation.Settings.dll</HintPath>
     </Reference>
     <Reference Include="Sdl.TranslationStudio.Editor">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Trados\Trados Studio\Studio18\Sdl.TranslationStudio.Editor.dll</HintPath>
+      <HintPath>$(MSBuildProgramFiles32)\Trados\Trados Studio\Studio18\Sdl.TranslationStudio.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Sdl.TranslationStudioAutomation.IntegrationApi">
       <HintPath>$(MSBuildProgramFiles32)\Trados\Trados Studio\Studio18\Sdl.TranslationStudioAutomation.IntegrationApi.dll</HintPath>
@@ -70,6 +71,6 @@
 	<PropertyGroup>
     <CreatePluginPackage>true</CreatePluginPackage>
     <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>C:\Users\paul\Documents\GIT\Localyzer.Connect\LocalyzerConnectKey.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>C:\Code\SDL\GitHub repos\RWS Community\SdlCommunity.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   </Project>
