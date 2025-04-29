@@ -1,56 +1,76 @@
-﻿using Microsoft.Web.WebView2.Wpf;
+﻿using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 using Sdl.Desktop.IntegrationApi.Interfaces;
 using System;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Net;
 
 namespace Localyzer.Connect.Views
 {
     public partial class MainViewPart : UserControl, IUIControl
     {
-        private WebView2 _browser;
-
         public MainViewPart()
         {
             InitializeComponent();
-
-            _browser = new WebView2();
-            _browser.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _browser.VerticalAlignment = VerticalAlignment.Stretch;
-            _browser.Margin = new Thickness(0);
-
-            RootGrid.Children.Add(_browser);
         }
+
+        private CoreWebView2Environment Environment { get; set; }
 
         public void Dispose()
         {
-            _browser?.Dispose();
+            WebView2Browser?.Dispose();
         }
 
-        public async void UpdateSegmentText(string segmentText, string url)
+        public async Task EnsureBrowserIsLoaded()
         {
-            if (!string.IsNullOrEmpty(url))
-            {
-                try
-                {
-                    // Ensure WebView2 is initialized before setting the URL
-                    await _browser.EnsureCoreWebView2Async();
-                    System.Diagnostics.Debug.WriteLine($"[DEBUG] WebView2 Initialized, rendering URL: {url}");
+            await WebView2Browser.EnsureCoreWebView2Async(Environment);
+        }
 
-                    // Now, set the URL in the WebView2 control
-                    _browser.Source = new Uri(url);
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"[ERROR] WebView2 initialization failed: {ex.Message}");
-                }
+        public void Navigate(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                var htmlContent = "<html><body><div style='display:flex;justify-content:center;align-items:center;height:100vh;font-size:24px;'>No content</div></body></html>";
+                WebView2Browser.CoreWebView2?.NavigateToString(htmlContent);
             }
             else
             {
-                _browser.Source = null; // Optional: Show a default page or message if URL is empty
+                WebView2Browser.CoreWebView2?.Navigate(url);
             }
         }
 
+        private async Task InitializeWebView()
+        {
+            if (WebView2Browser.CoreWebView2 is null)
+            {
+                var userDataFolder = Path.Combine(Path.GetTempPath(), Assembly.GetExecutingAssembly().GetName().Name);
+                var options = new CoreWebView2EnvironmentOptions { AllowSingleSignOnUsingOSPrimaryAccount = true };
+                Environment = await CoreWebView2Environment.CreateAsync(null, userDataFolder, options);
+
+                WebView2Browser.CreationProperties = new CoreWebView2CreationProperties
+                {
+                    UserDataFolder = userDataFolder
+                };
+
+                await EnsureBrowserIsLoaded();
+            }
+
+            Navigate(null);
+        }
+
+        private async void WebView2Browser_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await InitializeWebView();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }

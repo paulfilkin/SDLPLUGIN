@@ -160,20 +160,17 @@ namespace localyzer.connect.Views.MainView
         {
             var activeSegment = _editorController?.ActiveDocument?.ActiveSegmentPair;
 
+            var url = "";  // Get the URL based on the segment ID
             if (activeSegment != null)
             {
                 var path = _editorController.ActiveDocument.ActiveFile.LocalFilePath;
                 var doc = XDocument.Load(path);
-                var url = GetSegmentUrl(doc, activeSegment.Properties.Id.Id);  // Get the URL based on the segment ID
+                url = GetSegmentUrl(doc, activeSegment.Properties.Id.Id);
 
                 System.Diagnostics.Debug.WriteLine($"[DEBUG] Active segment URL: {url}");
+            }
 
-                _control?.UpdateSegmentText(null, url);  // Only pass the URL to WebView2 (no need for segmentText)
-            }
-            else
-            {
-                _control?.UpdateSegmentText(string.Empty, null);
-            }
+            _control?.Navigate(url);
         }
 
     }
