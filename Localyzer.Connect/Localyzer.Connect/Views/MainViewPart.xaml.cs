@@ -29,18 +29,29 @@ namespace Localyzer.Connect.Views
             await WebView2Browser.EnsureCoreWebView2Async(Environment);
         }
 
-        public void Navigate(string url)
+        public void Navigate(string contentOrUrl)
         {
-            if (string.IsNullOrWhiteSpace(url))
+            if (WebView2Browser.CoreWebView2 == null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(contentOrUrl))
             {
+                // Show default empty message
                 var htmlContent = "<html><body><div style='display:flex;justify-content:center;align-items:center;height:100vh;font-size:24px;'>No content</div></body></html>";
-                WebView2Browser.CoreWebView2?.NavigateToString(htmlContent);
+                WebView2Browser.CoreWebView2.NavigateToString(htmlContent);
+            }
+            else if (contentOrUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                // It is a URL - navigate to the URL
+                WebView2Browser.CoreWebView2.Navigate(contentOrUrl);
             }
             else
             {
-                WebView2Browser.CoreWebView2?.Navigate(url);
+                // It is raw HTML content - render it
+                WebView2Browser.CoreWebView2.NavigateToString(contentOrUrl);
             }
         }
+
 
         private async Task InitializeWebView()
         {

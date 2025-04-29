@@ -8,7 +8,7 @@ namespace localyzer.connect.Views.MainView
         "ShowLocalyzerConnectViewPartAction",
         Name = "Localyzer Connect",
         Description = "Show Localyzer Connect View Part",
-        Icon = "LocalyzerConnect")]
+        Icon = "LocalyzerConnect_Icon")]
     [ActionLayout(typeof(LocalyzerConnectRibbonGroup), 10, DisplayType.Large)]
     public class ShowLocalyzerConnectViewPartAction : AbstractAction
     {

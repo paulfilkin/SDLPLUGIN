@@ -5,9 +5,4 @@
   <Description>Provides an sdlxliff preview for Trados Cloud and .PXML files.</Description>
   <Author>multifarious</Author>
   <RequiredProduct name="TradosStudio" minversion="18.0" maxversion="18.9"/>
-  <Include>
-	<File>Microsoft.Web.WebView2.Wpf.dll</File>
-	<File>Microsoft.Web.WebView2.Core.dll</File>
-	  <File>WebView2Loader.dll</File>
-  </Include>	
 </PluginPackage>

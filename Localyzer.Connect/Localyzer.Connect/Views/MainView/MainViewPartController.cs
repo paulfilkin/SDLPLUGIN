@@ -6,6 +6,11 @@ using System;
 using Localyzer.Connect.Views;
 using System.Xml.Linq;
 using System.Linq;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
+using Sdl.FileTypeSupport.Framework.BilingualApi;
+
 
 namespace localyzer.connect.Views.MainView
 {
@@ -13,12 +18,13 @@ namespace localyzer.connect.Views.MainView
         Id = "LocalyzerConnectViewPart",
         Name = "Localyzer Connect",
         Description = "Main View Part for Localyzer Connect",
-        Icon = "LocalyzerConnect")]
+        Icon = "LocalyzerConnect_Icon")]
     [ViewPartLayout(Dock = DockType.Bottom, LocationByType = typeof(EditorController))]
     public class MainViewPartController : AbstractViewPartController
     {
         private MainViewPart _control;
         private EditorController _editorController;
+        private bool _isLrmIncontextFile;
 
         protected override IUIControl GetContentControl()
         {
@@ -27,7 +33,7 @@ namespace localyzer.connect.Views.MainView
                 _control = new MainViewPart();
             }
 
-            return (IUIControl)_control;
+            return _control;
         }
 
         protected override void Initialize()
@@ -38,12 +44,15 @@ namespace localyzer.connect.Views.MainView
             {
                 _editorController.ActiveDocumentChanged += EditorController_ActiveDocumentChanged;
                 TryAttachSegmentChanged();
+                // Do not call UpdateActiveSegment here; wait until a segment is active
 
-                // Call UpdateActiveSegment immediately when the document is first opened
-                UpdateActiveSegment();
+                foreach (var name in Assembly.GetExecutingAssembly().GetManifestResourceNames())
+                {
+                    System.Diagnostics.Debug.WriteLine($"[RESOURCE] {name}");
+                }
+
             }
         }
-
 
         private void EditorController_ActiveDocumentChanged(object sender, EventArgs e)
         {
@@ -62,55 +71,81 @@ namespace localyzer.connect.Views.MainView
                 _editorController.ActiveDocument.ActiveSegmentChanged -= ActiveDocument_ActiveSegmentChanged;
                 _editorController.ActiveDocument.ActiveSegmentChanged += ActiveDocument_ActiveSegmentChanged;
 
-                // Immediately update the current active segment when opening the document
+                // Manually trigger in case segment is already selected
                 UpdateActiveSegment();
             }
         }
 
-        //static string GetSegmentUrl(XDocument doc, string markerId)
-        //{
-        //    XNamespace ns = "urn:oasis:names:tc:xliff:document:1.2";
-        //    XNamespace sdl = "http://sdl.com/FileTypes/SdlXliff/1.0";
+        private async void UpdateActiveSegment()
+        {
+            // Safe loop: wait for Editor, Document, Segment, and WebView2
+            for (int i = 0; i < 20; i++) // Try for 2 seconds max (20 * 100ms)
+            {
+                var activeDocument = _editorController?.ActiveDocument;
+                var activeSegment = activeDocument?.ActiveSegmentPair;
 
-        //    // 1. find the <trans-unit> containing <mrk mid="markerId">
-        //    var tu = doc
-        //        .Descendants(ns + "trans-unit")
-        //        .FirstOrDefault(t => t
-        //            .Descendants(ns + "mrk")
-        //            .Any(m => (string)m.Attribute("mid") == markerId)
-        //        );
-        //    if (tu == null)
-        //        return null;
+                if (activeDocument != null && activeSegment != null && _control?.WebView2Browser?.CoreWebView2 != null)
+                {
+                    await ProceedWithNavigation(activeDocument, activeSegment);
+                    return;
+                }
 
-        //    // 2. get its <sdl:cmt id="..."/>
-        //    var cmtId = tu
-        //        .Elements(sdl + "cmt")
-        //        .Select(c => (string)c.Attribute("id"))
-        //        .FirstOrDefault(id => id != null);
-        //    if (cmtId == null)
-        //        return null;
+                await Task.Delay(100); // Wait 100ms and try again
+            }
 
-        //    // 3. look up the URL in <sdl:cmt-def id="cmtId">
-        //    return doc
-        //        .Descendants(sdl + "cmt-def")
-        //        .Where(cd => (string)cd.Attribute("id") == cmtId)
-        //        .Select(cd => cd
-        //            .Element(sdl + "Comments")
-        //            ?.Element(sdl + "Comment")
-        //            ?.Value
-        //        )
-        //        .FirstOrDefault();
-        //}
+            // If after 2 seconds we still have nothing, show empty
+            await _control.EnsureBrowserIsLoaded();
+            _control?.Navigate(null);
+        }
 
-        static string GetSegmentUrl(XDocument doc, string markerId)
+        private async Task ProceedWithNavigation(IStudioDocument activeDocument, ISegmentPair activeSegment)
+
+        {
+            var path = activeDocument?.ActiveFile?.LocalFilePath;
+
+            if (string.IsNullOrEmpty(path) || !path.EndsWith(".sdlxliff", StringComparison.OrdinalIgnoreCase))
+            {
+                await _control.EnsureBrowserIsLoaded();
+                _control?.Navigate(null);
+                return;
+            }
+
+            try
+            {
+                var doc = XDocument.Load(path);
+                var fileTypeIdElement = doc
+                    .Descendants()
+                    .FirstOrDefault(x => x.Name.LocalName == "filetype-id");
+
+                var fileTypeId = fileTypeIdElement?.Value ?? string.Empty;
+                _isLrmIncontextFile = fileTypeId.IndexOf("LRM_INCONTEXT", StringComparison.OrdinalIgnoreCase) >= 0;
+
+                await _control.EnsureBrowserIsLoaded();
+
+                if (_isLrmIncontextFile)
+                {
+                    var url = GetSegmentUrl(doc, activeSegment.Properties.Id.Id);
+                    _control?.Navigate(url);
+                }
+                else
+                {
+                    _control?.Navigate(GetEmbeddedLocalyzerHtml());
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ERROR] Failed to parse sdlxliff: {ex.Message}");
+                await _control.EnsureBrowserIsLoaded();
+                _control?.Navigate(null);
+            }
+        }
+
+
+        private static string GetSegmentUrl(XDocument doc, string markerId)
         {
             XNamespace ns = "urn:oasis:names:tc:xliff:document:1.2";
             XNamespace sdl = "http://sdl.com/FileTypes/SdlXliff/1.0";
 
-            // Debugging: Log the markerId we're searching for
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Searching for markerId: {markerId}");
-
-            // 1. Find the <trans-unit> containing <mrk mid="markerId">
             var tu = doc
                 .Descendants(ns + "trans-unit")
                 .FirstOrDefault(t => t
@@ -119,59 +154,50 @@ namespace localyzer.connect.Views.MainView
                 );
 
             if (tu == null)
-            {
-                System.Diagnostics.Debug.WriteLine($"[DEBUG] No trans-unit found for markerId: {markerId}");
                 return null;
-            }
 
-            // 2. Get the <sdl:cmt> id from the <trans-unit>
             var cmtId = tu
                 .Elements(sdl + "cmt")
                 .Select(c => (string)c.Attribute("id"))
-                .FirstOrDefault(id => id != null);
+                .FirstOrDefault();
 
             if (cmtId == null)
-            {
-                System.Diagnostics.Debug.WriteLine("[DEBUG] No cmtId found in trans-unit.");
                 return null;
-            }
 
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Found cmtId: {cmtId}");
-
-            // 3. Lookup the URL in <sdl:cmt-def id="cmtId">
             var url = doc
                 .Descendants(sdl + "cmt-def")
                 .Where(cd => (string)cd.Attribute("id") == cmtId)
                 .Select(cd => cd
                     .Element(sdl + "Comments")
                     ?.Element(sdl + "Comment")
-                    ?.Value
-                )
+                    ?.Value)
                 .FirstOrDefault();
-
-            // Debugging: Log the URL result
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Found URL: {url}");
 
             return url;
         }
 
-
-        private void UpdateActiveSegment()
+        private static string GetEmbeddedLocalyzerHtml()
         {
-            var activeSegment = _editorController?.ActiveDocument?.ActiveSegmentPair;
-
-            var url = "";  // Get the URL based on the segment ID
-            if (activeSegment != null)
+            try
             {
-                var path = _editorController.ActiveDocument.ActiveFile.LocalFilePath;
-                var doc = XDocument.Load(path);
-                url = GetSegmentUrl(doc, activeSegment.Properties.Id.Id);
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = assembly.GetManifestResourceNames()
+                    .FirstOrDefault(r => r.EndsWith("getLocalyzer.html", StringComparison.OrdinalIgnoreCase));
 
-                System.Diagnostics.Debug.WriteLine($"[DEBUG] Active segment URL: {url}");
+                if (resourceName == null)
+                    return null;
+
+                using (var stream = assembly.GetManifestResourceStream(resourceName))
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
             }
-
-            _control?.Navigate(url);
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ERROR] Failed to load embedded getLocalyzer.html: {ex.Message}");
+                return null;
+            }
         }
-
     }
 }
