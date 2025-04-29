@@ -9,6 +9,10 @@
 
     <Grid x:Name="RootGrid">
         <wpf:WebView2 Name="WebView2Browser"
-                      Loaded="WebView2Browser_OnLoaded" />
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              Margin="0"
+              Loaded="WebView2Browser_OnLoaded"
+              NavigationCompleted="WebView2Browser_NavigationCompleted"/>
     </Grid>
 </UserControl>
