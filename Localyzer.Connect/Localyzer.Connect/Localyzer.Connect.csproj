@@ -14,6 +14,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\LocalyzerConnect_Icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<!-- Embedded resources -->
 		<EmbeddedResource Include="Resources\LocalyzerConnect_Icon.png" />
 		<EmbeddedResource Include="Resources\getLocalyzer.html" />
@@ -65,7 +69,6 @@
 		<None Include="pluginpackage.manifest.xml" />
 		<None Include="Properties\AssemblyInfo.cs" />
 		<None Include="Properties\PluginProperties.cs" />
-		<None Include="PluginResources.resx" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -75,6 +78,25 @@
 		</PackageReference>
 		<PackageReference Include="Sdl.Core.PluginFramework" Version="2.1.0" />
 		<PackageReference Include="Sdl.Core.PluginFramework.Build" Version="18.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Resources\LocalyzerConnect_Icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="PluginResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>PluginResources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="PluginResources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>PluginResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 </Project>
